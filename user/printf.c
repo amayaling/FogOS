@@ -60,9 +60,12 @@ sprint_printint(char *strbuf, int xx, int base, int sgn)
   if(neg)
     buf[i++] = '-';
 
-  while(--i >= 0)
+  while(--i >= 0){
   	*strbuf++ = buf[i]; 
+  	}
     //putc(fd, buf[i]);
+
+    strbuf = '\0'; 
 }
 
 
@@ -75,17 +78,17 @@ printptr(int fd, uint64 x) {
     putc(fd, digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
-static void
-sprintptr(char *buf, uint64 x) {
-  int i;
+//static void
+//sprintptr(char *buf, uint64 x) {
+  //int i;
 
-  *buf++ = '0';
-  *buf++ = 'x';
+//  *buf++ = '0';
+//  *buf++ = 'x';
   //putc(fd, '0');
   //putc(fd, 'x');
-  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
-    *buf++ = (digits[x >> (sizeof(uint64) * 8 - 4)]);
-}
+//  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
+//    *buf++ = (digits[x >> (sizeof(uint64) * 8 - 4)]);
+//}
 
 
 
@@ -137,7 +140,7 @@ vprintf(int fd, const char *fmt, va_list ap)
 }
 
 /**
-This handles the memory safe sprint function
+This handles the basic sprintf() function
 @param fd the fd to write to
 @param buf the string buffer to write into
 @param 
@@ -168,7 +171,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      } else if(c == 'x') {
 	        sprint_printint(buffer, va_arg(ap, int), 16, 0);
 	      } else if(c == 'p') {
-	        sprintptr(buffer, va_arg(ap, uint64));
+	        printptr(fd, va_arg(ap, uint64));
 	      } else if(c == 's'){
 	        s = va_arg(ap, char*);
 	        if(s == 0)
@@ -195,7 +198,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 
 
 /**
-The function thata handles memory safe sprintf()
+The function that handles memory safe sprintf()
 @param fd the fd to write to
 @param buf the buffer to write the string into
 @para size the max amount of bytes to write to buf
