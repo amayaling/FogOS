@@ -39,6 +39,34 @@ printint(int fd, int xx, int base, int sgn)
 }
 
 static void
+sprint_printint(char *strbuf, int xx, int base, int sgn)
+{
+  char buf[16];
+  int i, neg;
+  uint x;
+
+  neg = 0;
+  if(sgn && xx < 0){
+    neg = 1;
+    x = -xx;
+  } else {
+    x = xx;
+  }
+
+  i = 0;
+  do{
+    buf[i++] = digits[x % base];
+  }while((x /= base) != 0);
+  if(neg)
+    buf[i++] = '-';
+
+  while(--i >= 0)
+  	*strbuf++ = buf[i]; 
+    //putc(fd, buf[i]);
+}
+
+
+static void
 printptr(int fd, uint64 x) {
   int i;
   putc(fd, '0');
@@ -46,6 +74,20 @@ printptr(int fd, uint64 x) {
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
     putc(fd, digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
+
+static void
+sprintptr(char *buf, uint64 x) {
+  int i;
+
+  *buf++ = '0';
+  *buf++ = 'x';
+  //putc(fd, '0');
+  //putc(fd, 'x');
+  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
+    *buf++ = (digits[x >> (sizeof(uint64) * 8 - 4)]);
+}
+
+
 
 // Print to the given fd. Only understands %d, %x, %p, %s.
 void
@@ -120,13 +162,13 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      }
 	} else if(state == '%'){
 	      if(c == 'd'){
-	        printint(fd, va_arg(ap, int), 10, 1);
+	        sprint_printint(buffer, va_arg(ap, int), 10, 1);
 	      } else if(c == 'l') {
-	        printint(fd, va_arg(ap, uint64), 10, 0);
+	        sprint_printint(buffer, va_arg(ap, uint64), 10, 0);
 	      } else if(c == 'x') {
-	        printint(fd, va_arg(ap, int), 16, 0);
+	        sprint_printint(buffer, va_arg(ap, int), 16, 0);
 	      } else if(c == 'p') {
-	        printptr(fd, va_arg(ap, uint64));
+	        sprintptr(buffer, va_arg(ap, uint64));
 	      } else if(c == 's'){
 	        s = va_arg(ap, char*);
 	        if(s == 0)
