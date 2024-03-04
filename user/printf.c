@@ -78,17 +78,17 @@ printptr(int fd, uint64 x) {
     putc(fd, digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
-//static void
-//sprintptr(char *buf, uint64 x) {
-  //int i;
+static void
+sprintptr(char *buf, uint64 x) {
+  int i;
 
-//  *buf++ = '0';
-//  *buf++ = 'x';
+  *buf++ = '0';
+  *buf++ = 'x';
   //putc(fd, '0');
   //putc(fd, 'x');
-//  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
-//    *buf++ = (digits[x >> (sizeof(uint64) * 8 - 4)]);
-//}
+  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
+    buf[i] = (digits[x >> (sizeof(uint64) * 8 - 4)]);
+}
 
 
 
@@ -171,7 +171,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      } else if(c == 'x') {
 	        sprint_printint(buffer, va_arg(ap, int), 16, 0);
 	      } else if(c == 'p') {
-	        printptr(fd, va_arg(ap, uint64));
+	        sprintptr(buffer, va_arg(ap, uint64));
 	      } else if(c == 's'){
 	        s = va_arg(ap, char*);
 	        if(s == 0)
