@@ -38,7 +38,7 @@ printint(int fd, int xx, int base, int sgn)
     putc(fd, buf[i]);
 }
 
-static void
+void
 sprint_printint(char *strbuf, int xx, int base, int sgn)
 {
   char buf[16];
@@ -65,7 +65,7 @@ sprint_printint(char *strbuf, int xx, int base, int sgn)
   	}
     //putc(fd, buf[i]);
 
-    strbuf = '\0'; 
+  *strbuf = '\0'; 
 }
 
 
@@ -78,7 +78,7 @@ printptr(int fd, uint64 x) {
     putc(fd, digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
-static void
+void
 sprintptr(char *buf, uint64 x) {
   int i;
 
@@ -87,7 +87,9 @@ sprintptr(char *buf, uint64 x) {
   //putc(fd, '0');
   //putc(fd, 'x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
-    buf[i] = (digits[x >> (sizeof(uint64) * 8 - 4)]);
+    buf[i] = digits[x >> (sizeof(uint64) * 8 - 4)];
+
+  *buf = '\0';
 }
 
 
@@ -161,7 +163,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      if(c == '%'){
 	        state = '%';
 	      } else {
-	        *buffer++ = c++;
+	        *buffer++ = c;
 	      }
 	} else if(state == '%'){
 	      if(c == 'd'){
@@ -182,13 +184,13 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	} else if(c == 'c'){
 	        *buffer++ = (char)va_arg(ap, uint);
 	      } else if(c == '%'){
-	        *buffer++ = c++; 
+	        *buffer++ = c; 
 	      } else {
 	        // Unknown % sequence.  Print it to draw attention.
 	       	*buffer++ = '%'; 
 	        //putc(fd, '%');
 	       // putc(fd, c);
-	       *buffer++ = c++; 
+	       *buffer++ = c; 
 	      }
 	      state = 0;
 	    }
