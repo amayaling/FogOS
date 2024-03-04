@@ -222,18 +222,18 @@ vsnprintf(int fd, char *buf, int size, const char *fmt, va_list ap)
 	      if(c == '%'){
 	        state = '%';
 		  } else {
-		 	*buffer++ = c++;
+		 	*buffer++ = c;
         	count++;
 	      }
 	    } else if(state == '%'){
 	      if(c == 'd'){
-	        printint(fd, va_arg(ap, int), 10, 1);
+	        sprint_printint(buffer, va_arg(ap, int), 10, 1);
 	      } else if(c == 'l') {
-	        printint(fd, va_arg(ap, uint64), 10, 0);
+	        sprint_printint(buffer, va_arg(ap, uint64), 10, 0);
 	      } else if(c == 'x') {
-	        printint(fd, va_arg(ap, int), 16, 0);
+	        sprint_printint(buffer, va_arg(ap, int), 16, 0);
 	      } else if(c == 'p') {
-	        printptr(fd, va_arg(ap, uint64));
+	        sprintptr(buffer, va_arg(ap, uint64));
 		} else if(c == 's'){
 	        s = va_arg(ap, char*);
 	        if(s == 0)
@@ -246,14 +246,14 @@ vsnprintf(int fd, char *buf, int size, const char *fmt, va_list ap)
 	        *buffer++ = (char)va_arg(ap, uint);
 	        count++; 
 	      } else if(c == '%'){
-	        *buffer++ = c++; 
+	        *buffer++ = c; 
 	        count++; 
 	      } else {
 	        // Unknown % sequence.  Print it to draw attention.
 	       	*buffer++ = '%'; 
 	        //putc(fd, '%');
 	       // putc(fd, c);
-	       *buffer++ = c++; 
+	       *buffer++ = c; 
 	       count += 2; 
 	      }
 	      state = 0;
