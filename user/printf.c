@@ -60,13 +60,13 @@ sprint_printint(char *strbuf, int xx, int base, int sgn)
   if(neg)
     buf[i++] = '-';
 
-  while(--i >= 0){
-  	*strbuf++ = buf[i]; 
+  
+  int length = i; 
+  // switched from the while loop to the for loop 
+	for(int j = length - 1; j >= 0; j--) {
+    	*strbuf++ = buf[j];
   	}
-
-  //*strbuf = '\0'; 
-// testing suggestions
-  return strlen(strbuf); 
+  return length; 
 }
 
 
@@ -85,8 +85,6 @@ sprintptr(char *buf, uint64 x) {
 
   *buf++ = '0';
   *buf++ = 'x';
-  //putc(fd, '0');
-  //putc(fd, 'x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
     buf[i] = digits[x >> (sizeof(uint64) * 8 - 4)];
 
@@ -154,6 +152,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 
 	char *s;
   	int c, i, state;
+  	int offset;
 
   	char *buffer = buf; // need to write it somewhere
 	// basically where i see puts, I am going to remove and write to the buffer 
@@ -168,14 +167,14 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      }
 	} else if(state == '%'){
 	      if(c == 'd'){
-	        int offset = sprint_printint(buffer, va_arg(ap, int), 10, 1);
-	        *buffer+= offset; 
+	        offset = sprint_printint(buffer, va_arg(ap, int), 10, 1);
+	        buffer+= offset; 
 	      } else if(c == 'l') {
-	        int offset = sprint_printint(buffer, va_arg(ap, uint64), 10, 0);
-	        *buffer+= offset; 
+	        offset = sprint_printint(buffer, va_arg(ap, uint64), 10, 1);
+	        buffer+= offset; 
 	      } else if(c == 'x') {
-	       int offset =  sprint_printint(buffer, va_arg(ap, int), 16, 0);
-	       *buffer+= offset; 
+	       	offset = sprint_printint(buffer, va_arg(ap, int), 16, 0);
+	       buffer+= offset; 
 	      } else if(c == 'p') {
 	        sprintptr(buffer, va_arg(ap, uint64));
 	      } else if(c == 's'){
@@ -199,7 +198,7 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      state = 0;
 	    }
 	  }
-  *buffer = '\0'; // have to null terminate 
+  //*buffer = '\0'; // have to null terminate 
 }
 
 
