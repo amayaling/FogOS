@@ -38,7 +38,7 @@ printint(int fd, int xx, int base, int sgn)
     putc(fd, buf[i]);
 }
 
-void
+int
 sprint_printint(char *strbuf, int xx, int base, int sgn)
 {
   char buf[16];
@@ -63,9 +63,10 @@ sprint_printint(char *strbuf, int xx, int base, int sgn)
   while(--i >= 0){
   	*strbuf++ = buf[i]; 
   	}
-    //putc(fd, buf[i]);
 
-  *strbuf = '\0'; 
+  //*strbuf = '\0'; 
+// testing suggestions
+  return strlen(strbuf); 
 }
 
 
@@ -145,7 +146,7 @@ vprintf(int fd, const char *fmt, va_list ap)
 This handles the basic sprintf() function
 @param fd the fd to write to
 @param buf the string buffer to write into
-@param 
+@param ap list of arguments 
 **/
 void
 vsprintf(int fd, char *buf, const char *fmt, va_list ap)
@@ -167,11 +168,14 @@ vsprintf(int fd, char *buf, const char *fmt, va_list ap)
 	      }
 	} else if(state == '%'){
 	      if(c == 'd'){
-	        sprint_printint(buffer, va_arg(ap, int), 10, 1);
+	        int offset = sprint_printint(buffer, va_arg(ap, int), 10, 1);
+	        *buffer+= offset; 
 	      } else if(c == 'l') {
-	        sprint_printint(buffer, va_arg(ap, uint64), 10, 0);
+	        int offset = sprint_printint(buffer, va_arg(ap, uint64), 10, 0);
+	        *buffer+= offset; 
 	      } else if(c == 'x') {
-	        sprint_printint(buffer, va_arg(ap, int), 16, 0);
+	       int offset =  sprint_printint(buffer, va_arg(ap, int), 16, 0);
+	       *buffer+= offset; 
 	      } else if(c == 'p') {
 	        sprintptr(buffer, va_arg(ap, uint64));
 	      } else if(c == 's'){
